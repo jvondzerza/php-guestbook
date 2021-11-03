@@ -1,7 +1,3 @@
-<?php
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,24 +8,37 @@
 <section id="new-entry">
     <form method="post">
         <label for="new-entry">Guestbook Entry</label>
-        <input type="text" name="title" placeholder="Title">
-        <input type="text" name="content" placeholder="Your entry here">
-        <input type="text" name="author" placeholder="Author">
+        <label>
+            <input type="text" name="title" placeholder="Title">
+        </label>
+        <label>
+            <input type="text" name="content" placeholder="Your entry here">
+        </label>
+        <label>
+            <input type="text" name="author" placeholder="Author">
+        </label>
+        <label>
+            <input type="number" name="number-of-entries" placeholder="Number of entries">
+        </label>
         <input type="submit" value="Submit entry">
     </form>
 </section>
+<p><?php if (isset($error)) {
+        echo $error;
+    } ?></p>
 <section id="guest-book">
     <?php
     try {
         $entries = gimmeEntries();
-        krsort($entries);
-        for ($i=0, $iMax = count($entries); $i < $iMax; $i++ ) {
-            echo $postLoader->headingWrap($entries[$i]["title"], 1);
-            echo $postLoader->headingWrap(substr($entries[$i]["date"]["date"], 0, -7), 3);
-            echo $postLoader->contentWrap($entries[$i]["content"]);
-            echo $postLoader->headingWrap($entries[$i]["author"], 2);
-            echo "<br>";
-        }
+            if (isset($postLoader)) {
+                foreach (array_slice($entries, 0, $postLoader->getNumberOfEntries()) as $entry) {
+                    echo $postLoader->headingWrap($entry["title"], 1);
+                    echo $postLoader->headingWrap(substr($entry["date"]["date"], 0, -7), 3);
+                    echo $postLoader->contentWrap($entry["content"]);
+                    echo $postLoader->headingWrap($entry["author"], 2) . "<br>";
+                }
+            }
+
     } catch (JsonException $e) {
     }
 
