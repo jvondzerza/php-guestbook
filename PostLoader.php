@@ -1,23 +1,33 @@
 <?php
 
+use JetBrains\PhpStorm\Pure;
+
 class PostLoader
 {
     private int $numberOfEntries = 20;
 
-    public function headingWrap ($param, $headingLevel) : string {
-        return "<h" . $headingLevel . ">" . $param . "</h" . $headingLevel . ">";
-    }
+    private array $results;
 
-    public function contentWrap ($param) : string {
-        return "<p>" . $param . "</p>";
+    private EmojiModifier $emojiModifier;
+
+
+    #[Pure] public function __construct(){
+        $this->emojiModifier = new EmojiModifier();
     }
 
     /**
-     * @return int
+     * @throws JsonException
      */
-    public function getNumberOfEntries(): int
+    public function gimmeEntries() {
+        return json_decode(file_get_contents("entries.json"), true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function putEmBack($entries): void
     {
-        return $this->numberOfEntries;
+        file_put_contents("entries.json", json_encode($entries, JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -28,5 +38,25 @@ class PostLoader
         $this->numberOfEntries = $numberOfEntries;
     }
 
+    public function headingWrap ($param, $headingLevel, $label) : string {
+        return "<h" . $headingLevel . ">" . $label . ": " . $param . "</h" . $headingLevel . ">";
+    }
+
+    public function contentWrap ($param) : string {
+        return "<p>" . $param . "</p>";
+    }
+
+    /**
+     * @throws JsonException
+     */
+    public function displayPosts(): array {
+        foreach (array_slice($this->gimmeEntries(), 0, $this->numberOfEntries) as $entry) {
+            $this->results[] = $this->emojiModifier->replace($this->headingWrap($entry["title"], 1, "Title")) .
+            $this->headingWrap(substr($entry["date"]["date"], 0, -7), 3, "Date") .
+            $this->emojiModifier->replace($this->contentWrap($entry["content"])) .
+            $this->emojiModifier->replace($this->headingWrap($entry["author"], 2, "Author")) . "<br>";
+        }
+        return $this->results;
+    }
 
 }

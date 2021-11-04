@@ -1,60 +1,44 @@
 <?php
 
 require "Post.php";
+require "EmojiModifier.php";
+require "ProfanityChecker.php";
 require "PostLoader.php";
 
-$postLoader = new PostLoader();
 $error = "";
-$profanity = ["fuck", "shit", "Fuck", "Shit"];
-$profanityCheck = [];
-
-/**
- * @throws JsonException
- */
-function gimmeEntries () {
-    return json_decode(file_get_contents("entries.json"), true, 512, JSON_THROW_ON_ERROR);
-}
-
-/**
- * @throws JsonException
- */
-function putEmBack ($entries) {
-   file_put_contents("entries.json", json_encode($entries, JSON_THROW_ON_ERROR));
-}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $post = new Post();
-    if (isset($_POST["title"])) {
+    $sanitizer = new ProfanityChecker();
+    $postLoader = new PostLoader();
+
+    if (isset($_POST["title"]) && !empty($_POST["title"])) {
         $post->setTitle(htmlspecialchars($_POST["title"]));
     }
-    if (isset($_POST["content"])) {
+    if (isset($_POST["content"]) && !empty($_POST["content"])) {
         $post->setContent(htmlspecialchars($_POST["content"]));
     }
-    if (isset($_POST["author"])) {
+    if (isset($_POST["author"]) && !empty($_POST["author"])) {
         $post->setAuthor(htmlspecialchars($_POST["author"]));
     }
-    if (isset($_POST["number-of-entries"])) {
+    if (isset($_POST["number-of-entries"]) && !empty($_POST["number-of-entries"])) {
         $postLoader->setNumberOfEntries($_POST["number-of-entries"]);
     }
     if ($post->getAuthor() && $post->getDate() && $post->getContent() && $post->getTitle()) {
         try {
             $post = $post->toArr();
-            for ($i = 0, $iMax = count($profanity); $i < $iMax; $i++) {
-                if (in_array($profanity[$i], $post, true)) {
-                    $profanityCheck[] = $profanity[$i];
-                }
-            }
-            if (count($profanityCheck) > 0) {
-                $error = "Profanity detected! Keep your entry clean!";
+            $sanitizer->sanityCheck($post, $sanitizer->getProfanity());
+            if (count($sanitizer->getProfanityCheck()) > 0) {
+                $error = "Profanity detected, keep it sanitary!";
             } else {
-                $entries = gimmeEntries();
+                $entries = $postLoader->gimmeEntries();
                 array_unshift($entries, $post);
-                putEmBack($entries);
+                $postLoader->putEmBack($entries);
             }
         } catch (JsonException $e) {
         }
     } else {
-        $error = "Please fill out all fields";
+        $error = "Please fill out all the fields";
     }
 }
 

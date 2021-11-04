@@ -23,25 +23,19 @@
         <input type="submit" value="Submit entry">
     </form>
 </section>
-<p><?php if (isset($error)) {
-        echo $error;
-    } ?></p>
+<section id="error-display">
+    <p><?php if (isset($error)) {
+            echo $error;
+        }?></p>
+</section>
 <section id="guest-book">
     <?php
-    try {
-        $entries = gimmeEntries();
-            if (isset($postLoader)) {
-                foreach (array_slice($entries, 0, $postLoader->getNumberOfEntries()) as $entry) {
-                    echo $postLoader->headingWrap($entry["title"], 1);
-                    echo $postLoader->headingWrap(substr($entry["date"]["date"], 0, -7), 3);
-                    echo $postLoader->contentWrap($entry["content"]);
-                    echo $postLoader->headingWrap($entry["author"], 2) . "<br>";
-                }
-            }
-
-    } catch (JsonException $e) {
+    if (isset($postLoader)) {
+        try {
+            echo implode("", $postLoader->displayPosts());
+        } catch (JsonException $e) {
+        }
     }
-
     ?>
 </section>
 
