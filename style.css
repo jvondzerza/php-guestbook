@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Tangerine:wght@700&display=swap');
+
+body {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    text-align: center;
+    overflow: hidden;
+    background-image: url("imgs/background.jpg");
+    background-size: cover;
+    font-family: 'Tangerine', cursive;
+}
+
+#new-entry {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 45vw;
+    height: 43vw;
+}
+
+#title {
+    top: -5px;
+}
+
+label {
+    margin-bottom: 10px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-evenly;
+}
+
+input {
+    height: 50px;
+    font-family: 'Tangerine', cursive;
+    font-size: 25px;
+}
+
+#content {
+    padding-bottom: 300px;
+}
+
+#submit {
+    width: 450px;
+}
+
+#guest-book {
+    display: flex;
+    flex-flow: row wrap;
+    width: 45vw;
+    height: 45vw;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ca5745;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #fff5e9;
+}
+
+h1 {
+    font-size: 45px;
+    font-weight: 900;
+}
+h3 {
+    font-size: 20px;
+    font-weight: 500;
+}
+h2{
+    font-size: 25px;
+    font-weight: 700;
+}
+div {
+    margin: 10px;
+}

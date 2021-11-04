@@ -38,8 +38,8 @@ class PostLoader
         $this->numberOfEntries = $numberOfEntries;
     }
 
-    public function headingWrap ($param, $headingLevel, $label) : string {
-        return "<h" . $headingLevel . ">" . $label . ": " . $param . "</h" . $headingLevel . ">";
+    public function headingWrap ($param, $headingLevel) : string {
+        return "<h" . $headingLevel . ">" . $param . "</h" . $headingLevel . ">";
     }
 
     public function contentWrap ($param) : string {
@@ -51,12 +51,11 @@ class PostLoader
      */
     public function displayPosts(): array {
         foreach (array_slice($this->gimmeEntries(), 0, $this->numberOfEntries) as $entry) {
-            $this->results[] = $this->emojiModifier->replace($this->headingWrap($entry["title"], 1, "Title")) .
-            $this->headingWrap(substr($entry["date"]["date"], 0, -7), 3, "Date") .
+            $this->results[] = "<div>" . $this->emojiModifier->replace($this->headingWrap($entry["title"], 1)) .
+            $this->headingWrap(substr($entry["date"]["date"], 0, -16), 3) .
             $this->emojiModifier->replace($this->contentWrap($entry["content"])) .
-            $this->emojiModifier->replace($this->headingWrap($entry["author"], 2, "Author")) . "<br>";
+            $this->emojiModifier->replace($this->headingWrap($entry["author"], 2)) . "<br></div>";
         }
         return $this->results;
     }
-
 }
